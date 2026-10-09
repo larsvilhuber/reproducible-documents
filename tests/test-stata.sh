@@ -115,6 +115,15 @@ test_part_3() { # image version
     examples/03-stata-dyndoc-word/report.md > "$TMP/ex03-$tag/report.md"
   stata "$img" "ex03-$tag" run.do
   check "R-squared is 0.29" docx_has "$TMP/ex03-$tag/report.docx" "R-squared is 0.29"
+
+  echo "=== Part 3 ($tag): the alternatives, putdocx and putpdf"
+  cp examples/03-stata-dyndoc-word/putdocx_report.do examples/03-stata-dyndoc-word/putpdf_report.do "$TMP/ex03-$tag/"
+  stata "$img" "ex03-$tag" putdocx_report.do
+  stata "$img" "ex03-$tag" putpdf_report.do
+  check "putdocx: Word text has -49.5" docx_has "$TMP/ex03-$tag/putdocx_report.docx" "-49.5 dollars"
+  check "putdocx: Word document has the table" docx_has_table "$TMP/ex03-$tag/putdocx_report.docx"
+  check "putdocx: Word document has the figure" docx_has_image "$TMP/ex03-$tag/putdocx_report.docx"
+  check "putpdf: PDF created" test -s "$TMP/ex03-$tag/putpdf_report.pdf"
   # back to the original, for the reference copy
   cp examples/03-stata-dyndoc-word/report.md "$TMP/ex03-$tag/report.md"
   stata "$img" "ex03-$tag" run.do
@@ -137,11 +146,6 @@ test_part_4() { # image version
   stata "$img" "ex04-$tag" cells.do
   check "Table 1 in the output" grep -q "Table 1: Car prices and fuel efficiency" "$TMP/ex04-$tag/cells.log"
   check "price_mpg.png created" test -s "$TMP/ex04-$tag/price_mpg.png"
-  check "results.docx created" test -s "$TMP/ex04-$tag/results.docx"
-  check "results.pdf created" test -s "$TMP/ex04-$tag/results.pdf"
-  check "Word text has -49.5" docx_has "$TMP/ex04-$tag/results.docx" "-49.5 dollars"
-  check "Word document has the table" docx_has_table "$TMP/ex04-$tag/results.docx"
-  check "Word document has the figure" docx_has_image "$TMP/ex04-$tag/results.docx"
 }
 
 save_expected() { # version
@@ -153,11 +157,13 @@ save_expected() { # version
   fi
   if [[ -d "$TMP/ex03-$tag" ]]; then
     mkdir -p examples/03-stata-dyndoc-word/expected
-    cp "$TMP/ex03-$tag/report.docx" "$TMP/ex03-$tag/report.html" "$TMP/ex03-$tag/price_mpg.png" examples/03-stata-dyndoc-word/expected/
+    cp "$TMP/ex03-$tag/report.docx" "$TMP/ex03-$tag/report.html" "$TMP/ex03-$tag/price_mpg.png" \
+       "$TMP/ex03-$tag/putdocx_report.docx" "$TMP/ex03-$tag/putpdf_report.pdf" examples/03-stata-dyndoc-word/expected/
   fi
   if [[ -d "$TMP/ex04-$tag" ]]; then
     mkdir -p examples/04-jupyter-colab/expected
-    cp "$TMP/ex04-$tag/results.docx" "$TMP/ex04-$tag/results.pdf" "$TMP/ex04-$tag/price_mpg.png" "$TMP/ex04-$tag/table1.txt" examples/04-jupyter-colab/expected/
+    # (results.docx and results.pdf are made by Python: tests/test-colab-notebook.sh)
+    cp "$TMP/ex04-$tag/price_mpg.png" "$TMP/ex04-$tag/table1.txt" examples/04-jupyter-colab/expected/
   fi
 }
 

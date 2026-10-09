@@ -70,12 +70,13 @@ fi
 EX03=examples/03-stata-dyndoc-word/expected
 if [[ -f $EX03/report.docx ]]; then
   docx2png "$EX03/report.docx" "$IMG/ex03-docx.png" 90 90 760 660
+  [[ -f $EX03/putdocx_report.docx ]] && docx2png "$EX03/putdocx_report.docx" "$IMG/ex03-putdocx.png" 90 90 760 900
 else
   echo "Skipping part 3: run tests/test-stata.sh first"
 fi
 
-# Part 4: Colab (the figure of cell 1, the Word document of cell 4,
-# the Python figure of cell 3)
+# Part 4: Colab (the figure of cell 1, the Python figure of cell 3,
+# the Word document of cell 5)
 EX04=examples/04-jupyter-colab/expected
 if [[ -f $EX04/results.docx ]]; then
   cp "$EX04/price_mpg.png" "$IMG/ex04-figure.png"

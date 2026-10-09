@@ -1,6 +1,6 @@
 # Stata versions the examples are tested on, by tests/test-stata.sh
 # (locally, and in the CI matrix of .github/workflows/tests.yml).
-# Part 4 needs Stata 17 or later (etable, putdocx collect).
+# Part 4 needs Stata 17 or later (etable).
 # The last line is the reference version: its outputs are saved to examples/*/expected/.
 #
 # version  image                                  parts

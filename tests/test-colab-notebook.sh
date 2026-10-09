@@ -91,10 +91,15 @@ EOF
 check "cell 2 writes the sentence with -49.5" cell_output_has "Scalar.getValue" "text/markdown" "**-49.5** dollars"
 check "cell 3 shows the Python figure" cell_output_has "inset_axes" "image/png" ""
 check "price_mpg_hist.png created" test -s "$TMP/nb/price_mpg_hist.png"
+check "cell 4 shows the table" cell_output_has "pd.DataFrame" "text/html" "Mileage (mpg)"
 check "results.docx created" test -s "$TMP/nb/results.docx"
 check "results.pdf created" test -s "$TMP/nb/results.pdf"
+docx_text() { unzip -p "$1" word/document.xml | tr -d '\n' | sed -e 's/<[^>]*>//g'; }
+check "Word: the sentence with -49.5" bash -c "$(declare -f docx_text); docx_text '$TMP/nb/results.docx' | grep -qF -- '-49.5 dollars'"
+check "Word: the table" bash -c "unzip -p '$TMP/nb/results.docx' word/document.xml | grep -q '<w:tbl>'"
+check "Word: the figure" bash -c "unzip -l '$TMP/nb/results.docx' | grep -q 'media/'"
 check "no license in the notebook" bash -c "! grep -qF \"\$(base64 -w0 '$STATALIC')\" '$NB'"
-# reference output for the slides (the Stata outputs come from tests/test-stata.sh)
+# reference outputs for the slides (the Stata outputs come from tests/test-stata.sh)
 mkdir -p examples/04-jupyter-colab/expected
-cp "$TMP/nb/price_mpg_hist.png" examples/04-jupyter-colab/expected/
+cp "$TMP/nb/price_mpg_hist.png" "$TMP/nb/results.docx" "$TMP/nb/results.pdf" examples/04-jupyter-colab/expected/
 echo "=== Colab notebook test passed"

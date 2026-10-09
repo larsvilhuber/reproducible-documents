@@ -78,3 +78,45 @@ image_or("images/ex03-docx.png",
 3. Try HTML instead of Word: `dyndoc report.md, replace`
 
 **Close** `report.docx` in Word before you re-run: Word locks the file.
+
+## Without Markdown: `putdocx` and `putpdf`
+
+- Stata commands that write a Word (`putdocx`) or PDF (`putpdf`) document, piece by piece
+- No Markdown file: everything is in a do-file
+- Good for reports with a fixed layout, made again and again
+- Since Stata 15
+
+## `putdocx_report.do`: the analysis
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/03-stata-dyndoc-word/putdocx_report.do", from = "sysuse auto", to = "regress price", lang = "stata")
+```
+
+As in `report.md`: the data, the figure, the regression.
+
+## `putdocx_report.do`: the document
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/03-stata-dyndoc-word/putdocx_report.do", from = "putdocx clear", lang = "stata")
+```
+
+## `putpdf_report.do`: the same, as PDF
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/03-stata-dyndoc-word/putpdf_report.do", from = "putpdf clear", lang = "stata")
+```
+
+The first part (data, figure, regression) is the same as in `putdocx_report.do`.
+
+## Run them
+
+```stata
+do putdocx_report.do
+do putpdf_report.do
+```
+
+```{r, echo=FALSE, results='asis'}
+image_or("images/ex03-putdocx.png",
+  "- `putdocx_report.docx` and `putpdf_report.pdf`: the sentence with the number from Stata, the regression table, and the figure",
+  '{.screenshot height="430"}')
+```

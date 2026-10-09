@@ -5,7 +5,7 @@
 | If you... | Use |
 |:----------|:----|
 | write your paper in **LaTeX** | Stata → LaTeX macros (2) |
-| write your paper in **Word** | Stata `dyndoc` (3), or `putdocx` (4) |
+| write your paper in **Word** | Stata `dyndoc` or `putdocx` (3) |
 | want to explore, and show your work step by step | Jupyter + Stata (4) |
 | want one source for HTML, Word, PDF, and slides | Quarto (1) |
 

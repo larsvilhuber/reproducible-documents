@@ -19,6 +19,15 @@
 2. Run `dyndoc report.md, docx replace` again. Close `report.docx` in Word first: Word locks the file.
 3. HTML instead of Word: `dyndoc report.md, replace`
 
+## Without Markdown: `putdocx` and `putpdf`
+
+The same report, written with Stata commands instead of Markdown (Stata 15 or later):
+
+```stata
+do putdocx_report.do    // creates putdocx_report.docx
+do putpdf_report.do     // creates putpdf_report.pdf
+```
+
 ## The tags
 
 | Tag | What it does |

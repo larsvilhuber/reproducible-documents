@@ -148,25 +148,43 @@ image_or("images/ex04-python-figure.png",
   '{height="540"}')
 ```
 
-## Cell 4: export to Word
+## Cell 4: the table, in Python
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-4-export-word.txt", lang = "stata")
+show_file("examples/04-jupyter-colab/cell-4-table-in-python.txt", lang = "python")
 ```
 
-## Cell 5: export to PDF
+## What you should see: the table
+
+- Below the cell: a formatted table (the notebook shows any pandas table this way)
+- `rows`: the same table as text, for the Word and PDF documents
+
+## Cell 5: a Word document, from Python
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-5-export-pdf.txt", lang = "stata")
+show_file("examples/04-jupyter-colab/cell-5-export-word.txt", lang = "python")
 ```
 
-## Cell 6: download the files
+## Cell 6: a PDF, from Python
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-6-download.txt", lang = "python")
+show_file("examples/04-jupyter-colab/cell-6-export-pdf.txt", lang = "python")
 ```
 
-No `%%stata` here: this is Python, and only works on Colab.
+## Notebook and Python features
+
+- `%pip install`: a **notebook** command, installs a Python package into this session
+- `b_mpg`, `table`, `rows`, the figure: made in **earlier cells**, used again here
+- Run the cells **in order** ([Runtime]{.menu} ▸ [Run all]{.menu} does that)
+- The Stata way to do this, `putdocx` and `putpdf`, is in part 3
+
+## Cell 7: download the files
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/04-jupyter-colab/cell-7-download.txt", lang = "python")
+```
+
+This only works on Colab.
 
 Or, on Colab and Binder: in the file list on the left, right-click the file ▸ [Download]{.menu}.
 
@@ -174,7 +192,7 @@ Or, on Colab and Binder: in the file list on the left, right-click the file ▸ 
 
 ```{r, echo=FALSE, results='asis'}
 image_or("images/ex04-docx.png",
-  "- `results.docx` and `results.pdf`: a title, a sentence with the coefficient filled in by Stata, Table 1, and the figure\n- Re-run the cells: both documents are re-created",
+  "- `results.docx` and `results.pdf`: a title, the sentence with the coefficient from Stata, the table, and the Python figure\n- Re-run the cells: both documents are re-created",
   '{.screenshot height="560"}')
 ```
 

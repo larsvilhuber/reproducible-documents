@@ -88,7 +88,7 @@ which runs on Google Colab with a Google account, or on Binder without one). To 
 # Which one should I use?
 
 If you write your paper in LaTeX, let Stata write the numbers as LaTeX macros
-(part 2). If you write in Word, Stata's `dyndoc` (part 3) or `putdocx` (part 4)
+(part 2). If you write in Word, Stata's `dyndoc` or `putdocx` (part 3)
 create the document for you. Jupyter notebooks (part 4) are good to explore, and
 to show your work step by step. Quarto (part 1) creates HTML, Word, PDF, and
 slides from one source. They can be combined: Stata writes the numbers, Quarto
