@@ -12,6 +12,12 @@ on:
         description: 'Refresh the website'
         default: true
 
+# One publication at a time: GitHub Pages refuses overlapping deployments.
+# A newer push waits for the running one, and replaces any older waiting one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 # This job installs dependencies, renders the slides, and publishes them to GitHub Pages
 jobs:
 
