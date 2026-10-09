@@ -8,6 +8,11 @@ on:
     - main
   workflow_dispatch:
 
+# a new push cancels the tests of the previous one, if they are still running
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   # Part 1 must work for participants: render it in all formats
