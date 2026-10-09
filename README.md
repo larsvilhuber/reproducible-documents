@@ -48,7 +48,7 @@ The Docker image is `rocker/verse` plus the packages in `renv.lock`; its name an
 |:-------|:--------------|:------|
 | `tests/test-quarto.sh` | Part 1 (HTML, Word, PDF; a fresh posit.cloud project; the "Your turn" exercises), LaTeX of part 2, Quarto rendering a notebook | Docker |
 | `tests/test-stata.sh [version...]` | Parts 2, 3, and 4 (as a do-file), on every Stata version in `tests/stata-versions.txt` (16 to 19.5; part 4 needs 17+); saves reference outputs to `examples/*/expected/` | Docker, `STATALIC=/path/to/stata.lic` |
-| `tests/test-colab-notebook.sh` | Part 4 end to end: the Colab notebook plus the new cells, through PyStata | Docker, `STATALIC=/path/to/stata.lic` |
+| `tests/test-colab-notebook.sh` | Part 4 end to end: the Colab notebook plus the new cells, through PyStata, then printed to Word and PDF with Quarto (as on Binder) | Docker, `STATALIC=/path/to/stata.lic` |
 | `tests/make-screenshots.sh` | Creates the screenshots of the outputs shown on the slides | Docker, LibreOffice, poppler |
 | `tests/check-overflow.mjs` | Every slide fits on the page: nothing cut off, no scrolling code | Docker (`astefanutti/decktape`) |
 

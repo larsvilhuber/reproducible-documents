@@ -76,14 +76,24 @@ else
 fi
 
 # Part 4: Colab (the figure of cell 1, the Python figure of cell 3,
-# the Word document of cell 5)
+# the printed notebook)
 EX04=examples/04-jupyter-colab/expected
-if [[ -f $EX04/results.docx ]]; then
+if [[ -f $EX04/price_mpg.png ]]; then
   cp "$EX04/price_mpg.png" "$IMG/ex04-figure.png"
   echo "Created $IMG/ex04-figure.png"
-  docx2png "$EX04/results.docx" "$IMG/ex04-docx.png" 90 90 760 900
 else
   echo "Skipping part 4: run tests/test-stata.sh first"
+fi
+# the page of the printed notebook with the sentence from cell 2
+if [[ -f $EX04/notebook.pdf ]]; then
+  n=$(pdfinfo "$EX04/notebook.pdf" | awk '/^Pages/ { print $2 }')
+  for ((p = 1; p <= n; p++)); do
+    if pdftotext -f $p -l $p "$EX04/notebook.pdf" - | grep -q "changes the price by"; then
+      pdftoppm -f $p -l $p -r 110 -png -singlefile "$EX04/notebook.pdf" "$IMG/ex04-notebook"
+      echo "Created $IMG/ex04-notebook.png (page $p)"
+      break
+    fi
+  done
 fi
 if [[ -f $EX04/price_mpg_hist.png ]]; then
   cp "$EX04/price_mpg_hist.png" "$IMG/ex04-python-figure.png"

@@ -148,72 +148,47 @@ image_or("images/ex04-python-figure.png",
   '{height="540"}')
 ```
 
-## Cell 4: the table, in Python
+## Print the notebook: Colab
 
-```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-4-table-in-python.txt", lang = "python")
-```
+- PDF: [File]{.menu} ▸ [Print]{.menu} ▸ *Save as PDF*
+- Word: [File]{.menu} ▸ [Download]{.menu} ▸ [Download .ipynb]{.menu}, then convert it with Quarto (two slides on)
+- Keep your work: [File]{.menu} ▸ [Save a copy in Drive]{.menu}
 
-## What you should see: the table
+## Print the notebook: Binder
 
-- Below the cell: a formatted table (the notebook shows any pandas table this way)
-- `rows`: the same table as text, for the Word and PDF documents
-
-## Cell 5: a Word document, from Python
-
-```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-5-export-word.txt", lang = "python")
-```
-
-## Cell 6: a PDF, from Python
-
-```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-6-export-pdf.txt", lang = "python")
-```
-
-## Notebook and Python features
-
-- `%pip install`: a **notebook** command, installs a Python package into this session
-- `b_mpg`, `table`, `rows`, the figure: made in **earlier cells**, used again here
-- Run the cells **in order** ([Runtime]{.menu} ▸ [Run all]{.menu} does that)
-- The Stata way to do this, `putdocx` and `putpdf`, is in part 3
-
-## Cell 7: download the files
-
-```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-7-download.txt", lang = "python")
-```
-
-This only works on Colab.
-
-Or, on Colab and Binder: in the file list on the left, right-click the file ▸ [Download]{.menu}.
-
-## The result
-
-```{r, echo=FALSE, results='asis'}
-image_or("images/ex04-docx.png",
-  "- `results.docx` and `results.pdf`: a title, the sentence with the coefficient from Stata, the table, and the Python figure\n- Re-run the cells: both documents are re-created",
-  '{.screenshot height="560"}')
-```
-
-## The whole notebook
-
-- As PDF: [File]{.menu} ▸ [Print]{.menu} ▸ *Save as PDF*
-- As a notebook: [File]{.menu} ▸ [Download]{.menu} ▸ [Download .ipynb]{.menu}
-- Keep your changes: [File]{.menu} ▸ [Save a copy in Drive]{.menu}
-
-## Bonus: back to Quarto
-
-Quarto can turn the downloaded notebook into Word or PDF.
-
-On posit.cloud: [Upload]{.menu} the `.ipynb` in the Files pane, then in the Terminal:
+First save it: [File]{.menu} ▸ [Save Notebook]{.menu}. Then [File]{.menu} ▸ [New]{.menu} ▸ [Terminal]{.menu}:
 
 ```bash
+pip install quarto-cli
 quarto render stata_colab_example.ipynb --to docx
 quarto render stata_colab_example.ipynb --to typst
 ```
 
-Quarto uses the outputs saved in the notebook: no Stata needed.
+- Creates `stata_colab_example.docx` and `stata_colab_example.pdf`
+- Right-click them in the file list ▸ [Download]{.menu}
+- PDF also works with [File]{.menu} ▸ [Print]{.menu}
+
+## Print the notebook: anywhere
+
+With the downloaded `.ipynb`, wherever Quarto is:
+
+- posit.cloud (part 1): [Upload]{.menu} it, then use the [Terminal]{.menu}
+- your laptop: Quarto from <https://quarto.org>, or `pip install quarto-cli`
+
+```bash
+quarto render stata_colab_example.ipynb --to docx -M echo:false
+```
+
+- `--to typst` for PDF; `-M echo:false` hides the code, keeps the results
+- Quarto uses the results **saved in the notebook**: no Stata needed
+
+## The result: a page of the printed notebook
+
+```{r, echo=FALSE, results='asis'}
+image_or("images/ex04-notebook.png",
+  "- The notebook as a document: Table 1, the figures, and the sentence with the number from Stata\n- Run the notebook again, print again: everything is up to date",
+  '{.screenshot height="540"}')
+```
 
 ## Good to know
 

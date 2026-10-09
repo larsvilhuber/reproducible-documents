@@ -37,9 +37,9 @@ for f in stata_colab_example.ipynb setup_stata.py; do
   fi
 done
 
-# Append the cells, exactly as typed (cell 4 needs Colab, so it is left out)
+# Append the cells, exactly as typed
 docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/repo:ro -v "$TMP/nb":/nb -w /nb $PYTHON_IMAGE \
-  python3 -I /repo/tests/build-notebook.py stata_colab_example.ipynb notebook.ipynb --skip-download
+  python3 -I /repo/tests/build-notebook.py stata_colab_example.ipynb notebook.ipynb
 
 if [[ "$1" == "--build-only" ]]; then
   tail -c 600 "$TMP/nb/notebook.ipynb"
@@ -57,6 +57,11 @@ docker run --rm -v "$TMP/nb":/nb -w /nb \
     export STATA_LIC_BASE64=$(base64 -w0 /run/stata.lic)
     jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=900 \
       --output executed.ipynb notebook.ipynb
+    # print the notebook, as on the Binder slide (Quarto from pip, saved results)
+    pip install -q quarto-cli
+    quarto render executed.ipynb --to docx
+    quarto render executed.ipynb --to typst
+    quarto render executed.ipynb --to docx -M echo:false -o executed-noecho.docx
     chown -R '"$(id -u):$(id -g)"' /nb
   '
 
@@ -91,15 +96,19 @@ EOF
 check "cell 2 writes the sentence with -49.5" cell_output_has "Scalar.getValue" "text/markdown" "**-49.5** dollars"
 check "cell 3 shows the Python figure" cell_output_has "inset_axes" "image/png" ""
 check "price_mpg_hist.png created" test -s "$TMP/nb/price_mpg_hist.png"
-check "cell 4 shows the table" cell_output_has "pd.DataFrame" "text/html" "Mileage (mpg)"
-check "results.docx created" test -s "$TMP/nb/results.docx"
-check "results.pdf created" test -s "$TMP/nb/results.pdf"
+# the printed notebook
+DOCX="$TMP/nb/executed.docx"
 docx_text() { unzip -p "$1" word/document.xml | tr -d '\n' | sed -e 's/<[^>]*>//g'; }
-check "Word: the sentence with -49.5" bash -c "$(declare -f docx_text); docx_text '$TMP/nb/results.docx' | grep -qF -- '-49.5 dollars'"
-check "Word: the table" bash -c "unzip -p '$TMP/nb/results.docx' word/document.xml | grep -q '<w:tbl>'"
-check "Word: the figure" bash -c "unzip -l '$TMP/nb/results.docx' | grep -q 'media/'"
+check "Word: created" test -s "$DOCX"
+check "PDF: created" test -s "$TMP/nb/executed.pdf"
+check "Word: Table 1" bash -c "$(declare -f docx_text); docx_text '$DOCX' | grep -qF 'Table 1: Car prices and fuel efficiency'"
+check "Word: the sentence with -49.5" bash -c "$(declare -f docx_text); docx_text '$DOCX' | grep -qF -- '-49.5 dollars'"
+check "Word: the figures" bash -c "[[ \$(unzip -l '$DOCX' | grep -c 'media/') -ge 2 ]]"
+check "Word, -M echo:false: no code" bash -c "$(declare -f docx_text); ! docx_text '$TMP/nb/executed-noecho.docx' | grep -qF 'inset_axes'"
 check "no license in the notebook" bash -c "! grep -qF \"\$(base64 -w0 '$STATALIC')\" '$NB'"
 # reference outputs for the slides (the Stata outputs come from tests/test-stata.sh)
 mkdir -p examples/04-jupyter-colab/expected
-cp "$TMP/nb/price_mpg_hist.png" "$TMP/nb/results.docx" "$TMP/nb/results.pdf" examples/04-jupyter-colab/expected/
+cp "$TMP/nb/price_mpg_hist.png" examples/04-jupyter-colab/expected/
+cp "$TMP/nb/executed.docx" examples/04-jupyter-colab/expected/notebook.docx
+cp "$TMP/nb/executed.pdf" examples/04-jupyter-colab/expected/notebook.pdf
 echo "=== Colab notebook test passed"
