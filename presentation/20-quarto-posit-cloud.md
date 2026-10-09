@@ -107,7 +107,6 @@ quarto render report.qmd
 
 - Creates every format listed under `format:`: `report.html`, `report.docx`, `report.pdf`
 - Only one format: `quarto render report.qmd --to docx`
-- The PDF is made with **Typst**: no LaTeX needed
 
 ## Same source, three documents
 
