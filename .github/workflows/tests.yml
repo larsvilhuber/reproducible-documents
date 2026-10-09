@@ -54,37 +54,57 @@ jobs:
         docker run --rm -v ${{ github.workspace }}/presentation/_html:/slides -v ${{ github.workspace }}/tests:/tests \
           --entrypoint node astefanutti/decktape /tests/check-overflow.mjs /slides/index.html
 
-  # parts 2-4 must work for participants: run the Stata examples, and the
-  # Colab notebook with the new cells (needs the STATA_LIC_BASE64 secret)
-  test-stata:
+  # parts 2-4 must work for participants, on every Stata version they may
+  # have (tests/stata-versions.txt); needs the STATA_LIC_BASE64 secret
+  stata-versions:
     runs-on: ubuntu-24.04
+    outputs:
+      versions: ${{ steps.list.outputs.versions }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: List the Stata versions
+      id: list
+      run: |
+        echo "versions=$(grep -v '^#' tests/stata-versions.txt | awk 'NF { print $1 }' | jq -R . | jq -cs .)" >> "$GITHUB_OUTPUT"
 
+  test-stata:
+    needs: stata-versions
+    name: test-stata (${{ matrix.version }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.stata-versions.outputs.versions) }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Stata license
       id: license
       env:
         STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
-      run: |
-        if [[ -z "$STATA_LIC_BASE64" ]]; then
-          echo "No STATA_LIC_BASE64 secret: skipping the Stata tests"
-          echo "available=false" >> "$GITHUB_OUTPUT"
-        else
-          echo "$STATA_LIC_BASE64" | base64 -d > "$RUNNER_TEMP/stata.lic"
-          chmod 600 "$RUNNER_TEMP/stata.lic"
-          echo "available=true" >> "$GITHUB_OUTPUT"
-        fi
-
-    - name: Test parts 2, 3, 4 (Stata)
+      run: tests/ci-license.sh
+    - name: Test parts 2, 3, 4 on Stata ${{ matrix.version }}
       if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-stata.sh
-
-    - name: Test the Colab notebook with the new cells (PyStata)
-      if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-colab-notebook.sh
-
+      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-stata.sh ${{ matrix.version }}
     - name: Remove the license
       if: always()
       run: rm -f "$RUNNER_TEMP/stata.lic"
 
+  # part 4 end to end: the Colab notebook with the new cells, through PyStata
+  test-colab-notebook:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Stata license
+      id: license
+      env:
+        STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
+      run: tests/ci-license.sh
+    - name: Test the Colab notebook with the new cells (PyStata)
+      if: steps.license.outputs.available == 'true'
+      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-colab-notebook.sh
+    - name: Remove the license
+      if: always()
+      run: rm -f "$RUNNER_TEMP/stata.lic"

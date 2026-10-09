@@ -1,20 +1,17 @@
 #!/bin/bash
-# Test the Stata parts (2, 3, 4) in the AEA Data Editor's Stata containers.
+# Test the Stata parts (2, 3, 4) in the AEA Data Editor's Stata containers,
+# on every Stata version in tests/stata-versions.txt.
 #
-# Needs your Stata license:
-#   STATALIC=/path/to/stata.lic tests/test-stata.sh
-#
-# Options (environment variables):
-#   STATA_IMAGE         image for all parts (default below; must match your license)
-#   STATA_IMAGES_OLDER  space-separated list of older images on which parts 2 and 3
-#                       are also run, e.g. "dataeditors/stata17:2024-02-13"
-#                       (participants run these on their own laptops)
+# Needs a Stata license that works for those versions:
+#   STATALIC=/path/to/stata.lic tests/test-stata.sh            # all versions
+#   STATALIC=/path/to/stata.lic tests/test-stata.sh 16 19_5    # only these
 #
 # Part 4 is tested as a do-file made from the notebook cells; the cells
 # themselves run in Colab through PyStata (see tests/test-colab-notebook.sh).
 #
-# Writes reference outputs to examples/0[234]-*/expected/, which the slides
-# show, and which participants can compare their results to.
+# When the reference version (last line of tests/stata-versions.txt) is
+# tested, its outputs are saved to examples/0[234]-*/expected/: the slides
+# show them, and participants can compare their results to them.
 
 set -e
 [[ $(basename "$PWD") == "tests" ]] && cd ..
@@ -25,10 +22,13 @@ if [[ -z "$STATALIC" || ! -f "$STATALIC" ]]; then
   exit 2
 fi
 
-STATA_IMAGE=${STATA_IMAGE:-dataeditors/stata19_5-mp-i:2026-06-03}
-. ./.myconfig.sh
-IMAGE=$space/$repo:$tag
-docker image inspect $IMAGE > /dev/null 2>&1 || ./build.sh $tag
+VERSIONS_FILE=tests/stata-versions.txt
+ALL_VERSIONS=$(grep -v '^#' $VERSIONS_FILE | awk 'NF { print $1 }')
+REFERENCE=$(echo "$ALL_VERSIONS" | tail -1)
+VERSIONS=${*:-$ALL_VERSIONS}
+
+# to compile the LaTeX paper (the base of the project's Docker image)
+LATEX_IMAGE=rocker/verse:4.6.1
 
 TMP=$(mktemp -d -p "$PWD" _test.XXXX)
 trap 'rm -rf "$TMP"' EXIT
@@ -62,8 +62,8 @@ docx_has() { # file.docx text
 docx_has_image() { unzip -l "$1" | grep -q 'media/'; }
 docx_has_table() { unzip -p "$1" word/document.xml | grep -q '<w:tbl>'; }
 
-# Part 2 and 3, on one Stata image
-test_parts_2_3() { # image label
+# Part 2, on one Stata image
+test_part_2() { # image version
   local img=$1 tag=$2
 
   echo "=== Part 2 ($tag): policy_macros.do writes results_macros.tex"
@@ -78,7 +78,7 @@ test_parts_2_3() { # image label
   check "CoefMpg is -49.5"   grep -qF '\newcommand{\CoefMpg}{-49.5}' "$m"
   check "NObs is 74"         grep -qF '\newcommand{\NObs}{74}' "$m"
   docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$TMP/ex02-$tag":/project -w /project \
-    $IMAGE pdflatex -interaction=nonstopmode -halt-on-error paper.tex > /dev/null
+    $LATEX_IMAGE pdflatex -interaction=nonstopmode -halt-on-error paper.tex > /dev/null
   check "paper.pdf compiles with the real macros" test -s "$TMP/ex02-$tag/paper.pdf"
 
   echo "=== Part 2 ($tag): 'Step 5: change something' flips the winner"
@@ -88,6 +88,11 @@ test_parts_2_3() { # image label
   # restore the original output for the reference copy
   cp examples/02-stata-latex-macros/policy_macros.do "$TMP/ex02-$tag/"
   stata "$img" "ex02-$tag" policy_macros.do
+}
+
+# Part 3, on one Stata image
+test_part_3() { # image version
+  local img=$1 tag=$2
 
   echo "=== Part 3 ($tag): dyndoc report.md, docx"
   mkdir -p "$TMP/ex03-$tag"
@@ -110,38 +115,64 @@ test_parts_2_3() { # image label
     examples/03-stata-dyndoc-word/report.md > "$TMP/ex03-$tag/report.md"
   stata "$img" "ex03-$tag" run.do
   check "R-squared is 0.29" docx_has "$TMP/ex03-$tag/report.docx" "R-squared is 0.29"
+  # back to the original, for the reference copy
+  cp examples/03-stata-dyndoc-word/report.md "$TMP/ex03-$tag/report.md"
+  stata "$img" "ex03-$tag" run.do
 }
 
-test_parts_2_3 "$STATA_IMAGE" main
-for img in $STATA_IMAGES_OLDER; do
-  test_parts_2_3 "$img" "$(echo "$img" | tr '/:' '__')"
+# Part 4, on one Stata image (Stata 17 or later)
+test_part_4() { # image version
+  local img=$1 tag=$2
+
+  echo "=== Part 4 ($tag): the Colab cells, as a do-file"
+  mkdir -p "$TMP/ex04-$tag"
+  {
+    for c in examples/04-jupyter-colab/cell-[123]-*.txt; do
+      grep -v '^%%stata' "$c"
+      # for the slides: the table as text, as shown below cell 1
+      [[ $c == *cell-1-* ]] && echo 'collect export table1.txt, replace'
+    done
+  } > "$TMP/ex04-$tag/cells.do"
+  stata "$img" "ex04-$tag" cells.do
+  check "Table 1 in the output" grep -q "Table 1: Car prices and fuel efficiency" "$TMP/ex04-$tag/cells.log"
+  check "price_mpg.png created" test -s "$TMP/ex04-$tag/price_mpg.png"
+  check "results.docx created" test -s "$TMP/ex04-$tag/results.docx"
+  check "results.pdf created" test -s "$TMP/ex04-$tag/results.pdf"
+  check "Word text has -49.5" docx_has "$TMP/ex04-$tag/results.docx" "-49.5 dollars"
+  check "Word document has the table" docx_has_table "$TMP/ex04-$tag/results.docx"
+  check "Word document has the figure" docx_has_image "$TMP/ex04-$tag/results.docx"
+}
+
+save_expected() { # version
+  local tag=$1
+  echo "=== Saving reference outputs (Stata $tag) to examples/*/expected/"
+  if [[ -d "$TMP/ex02-$tag" ]]; then
+    mkdir -p examples/02-stata-latex-macros/expected
+    cp "$TMP/ex02-$tag/results_macros.tex" "$TMP/ex02-$tag/paper.pdf" examples/02-stata-latex-macros/expected/
+  fi
+  if [[ -d "$TMP/ex03-$tag" ]]; then
+    mkdir -p examples/03-stata-dyndoc-word/expected
+    cp "$TMP/ex03-$tag/report.docx" "$TMP/ex03-$tag/report.html" "$TMP/ex03-$tag/price_mpg.png" examples/03-stata-dyndoc-word/expected/
+  fi
+  if [[ -d "$TMP/ex04-$tag" ]]; then
+    mkdir -p examples/04-jupyter-colab/expected
+    cp "$TMP/ex04-$tag/results.docx" "$TMP/ex04-$tag/results.pdf" "$TMP/ex04-$tag/price_mpg.png" "$TMP/ex04-$tag/table1.txt" examples/04-jupyter-colab/expected/
+  fi
+}
+
+for v in $VERSIONS; do
+  line=$(grep -v '^#' $VERSIONS_FILE | awk -v v="$v" '$1 == v')
+  if [[ -z "$line" ]]; then
+    echo "Stata version $v is not in $VERSIONS_FILE"
+    exit 2
+  fi
+  img=$(echo "$line" | awk '{ print $2 }')
+  parts=$(echo "$line" | awk '{ for (i = 3; i <= NF; i++) printf "%s ", $i }')
+  echo "##### Stata $v ($img): parts $parts"
+  for p in $parts; do
+    test_part_$p "$img" "$v"
+  done
+  [[ "$v" == "$REFERENCE" ]] && save_expected "$v"
 done
 
-echo "=== Part 4: the Colab cells, as a do-file"
-mkdir -p "$TMP/ex04"
-{
-  for c in examples/04-jupyter-colab/cell-[123]-*.txt; do
-    grep -v '^%%stata' "$c"
-    # for the slides: the table as text, as shown below cell 1
-    [[ $c == *cell-1-* ]] && echo 'collect export table1.txt, replace'
-  done
-} > "$TMP/ex04/cells.do"
-stata "$STATA_IMAGE" ex04 cells.do
-check "Table 1 in the output" grep -q "Table 1: Car prices and fuel efficiency" "$TMP/ex04/cells.log"
-check "price_mpg.png created" test -s "$TMP/ex04/price_mpg.png"
-check "results.docx created" test -s "$TMP/ex04/results.docx"
-check "results.pdf created" test -s "$TMP/ex04/results.pdf"
-check "Word text has -49.5" docx_has "$TMP/ex04/results.docx" "-49.5 dollars"
-check "Word document has the table" docx_has_table "$TMP/ex04/results.docx"
-check "Word document has the figure" docx_has_image "$TMP/ex04/results.docx"
-
-echo "=== Saving reference outputs to examples/*/expected/"
-mkdir -p examples/02-stata-latex-macros/expected examples/03-stata-dyndoc-word/expected examples/04-jupyter-colab/expected
-cp "$TMP/ex02-main/results_macros.tex" "$TMP/ex02-main/paper.pdf" examples/02-stata-latex-macros/expected/
-# the reference report is the one without the 'Your turn' change
-cp examples/03-stata-dyndoc-word/report.md "$TMP/ex03-main/report.md"
-stata "$STATA_IMAGE" ex03-main run.do
-cp "$TMP/ex03-main/report.docx" "$TMP/ex03-main/report.html" "$TMP/ex03-main/price_mpg.png" examples/03-stata-dyndoc-word/expected/
-cp "$TMP/ex04/results.docx" "$TMP/ex04/results.pdf" "$TMP/ex04/price_mpg.png" "$TMP/ex04/table1.txt" examples/04-jupyter-colab/expected/
-
-echo "=== All Stata tests passed"
+echo "=== All Stata tests passed: Stata $(echo $VERSIONS)"

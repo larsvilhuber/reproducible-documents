@@ -47,7 +47,7 @@ The Docker image is `rocker/verse` plus the packages in `renv.lock`; its name an
 | Script | What it tests | Needs |
 |:-------|:--------------|:------|
 | `tests/test-quarto.sh` | Part 1 (HTML, Word, PDF; a fresh posit.cloud project; the "Your turn" exercises), LaTeX of part 2, Quarto rendering a notebook | Docker |
-| `tests/test-stata.sh` | Parts 2, 3, and 4 (as a do-file); saves reference outputs to `examples/*/expected/` | Docker, `STATALIC=/path/to/stata.lic` |
+| `tests/test-stata.sh [version...]` | Parts 2, 3, and 4 (as a do-file), on every Stata version in `tests/stata-versions.txt` (16 to 19.5; part 4 needs 17+); saves reference outputs to `examples/*/expected/` | Docker, `STATALIC=/path/to/stata.lic` |
 | `tests/test-colab-notebook.sh` | Part 4 end to end: the Colab notebook plus the new cells, through PyStata | Docker, `STATALIC=/path/to/stata.lic` |
 | `tests/make-screenshots.sh` | Creates the screenshots of the outputs shown on the slides | Docker, LibreOffice, poppler |
 | `tests/check-overflow.mjs` | Every slide fits on the page: nothing cut off, no scrolling code | Docker (`astefanutti/decktape`) |
@@ -66,7 +66,7 @@ python3 tests/build-notebook.py ../jupyter-stata-colab/stata_colab_example.ipynb
   ../jupyter-stata-colab/stata_colab_solutions.ipynb
 ```
 
-The GitHub Actions workflow renders the slides and the article, tests part 1, runs the Stata tests (with the `STATA_LIC_BASE64` repository secret, skipped if it is not set), checks that every slide fits, creates the PDF, and publishes everything to GitHub Pages.
+Two GitHub Actions workflows: `compile-presentation.yml` renders the slides and the article, creates the PDF, and publishes everything to GitHub Pages. `tests.yml` runs separately, and does not hold up publication: it tests part 1, checks that every slide fits, runs the Stata tests on each version in parallel, and runs the Colab notebook (Stata tests use the `STATA_LIC_BASE64` repository secret, and are skipped if it is not set).
 
 ## License
 
