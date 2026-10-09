@@ -1,16 +1,18 @@
 # Part 4: Jupyter + Stata on Google Colab or Binder
 
-The notebook in [larsvilhuber/jupyter-stata-colab](https://github.com/larsvilhuber/jupyter-stata-colab) installs Stata on Google Colab (or on [Binder](https://mybinder.org), which needs no account), and runs Stata code in cells that start with `%%stata`. You add new cells that create a printable table and a figure, and export both to Word and PDF.
+The notebook in [larsvilhuber/jupyter-stata-colab](https://github.com/larsvilhuber/jupyter-stata-colab) installs Stata on Google Colab (or on [Binder](https://mybinder.org), which needs no account), and runs Stata code in cells that start with `%%stata`. You add new cells that create a printable table and a figure, put a number from Stata into a sentence, make a figure with Python that is hard to make in Stata, and export the table and figure to Word and PDF.
 
 | File | Type it into |
 |:-----|:-------------|
 | `cell-1-table-and-figure.txt` | A new code cell: three regressions in one table (`etable`), and a figure |
-| `cell-2-export-word.txt` | A new code cell: Word document with the table and the figure (`putdocx`) |
-| `cell-3-export-pdf.txt` | A new code cell: the same, as PDF (`putpdf`) |
-| `cell-4-download.txt` | A new code cell: download both files to your computer (Python, Colab only; on Binder, right-click the files ▸ **Download**) |
+| `cell-2-number-in-sentence.txt` | A new code cell: the coefficient from Stata, in a sentence (Python) |
+| `cell-3-python-figure.txt` | A new code cell: scatter plot with a histogram along each axis (Python, matplotlib) |
+| `cell-4-export-word.txt` | A new code cell: Word document with the table and the figure (`putdocx`) |
+| `cell-5-export-pdf.txt` | A new code cell: the same, as PDF (`putpdf`) |
+| `cell-6-download.txt` | A new code cell: download both files to your computer (Python, Colab only; on Binder, right-click the files ▸ **Download**) |
 | `expected/` | What you should get |
 
-Copy each file's content into its own cell, including the first line `%%stata`. Stuck? The [solutions notebook](https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_solutions.ipynb) has all the new cells.
+Copy each file's content into its own cell, including the first line `%%stata` where there is one (cells 2, 3, and 6 are Python). Stuck? The [solutions notebook](https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_solutions.ipynb) has all the new cells.
 
 ## Before you start
 
@@ -31,8 +33,9 @@ Copy the result. Treat it like a password: never paste it into the notebook itse
 1. Open the notebook: go to <https://github.com/larsvilhuber/jupyter-stata-colab>, click **Open in Colab** (or **launch binder**: no account needed, but it takes a few minutes to start, and stops after about 10 minutes without activity).
 2. **Runtime** ▸ **Run all** (Binder: **Run** ▸ **Run All Cells**). Colab warns that the notebook is not from Google: **Run anyway**. Paste your license line when asked.
 3. At the bottom, click **+ Code**, type cell 1, and run it (**Shift+Enter**): you see Table 1 and the figure.
-4. Add and run cells 2 and 3: they create `results.docx` and `results.pdf`.
-5. Add and run cell 4 to download them. Or: click the folder icon on the left, right-click the file ▸ **Download**.
+4. Add and run cell 2: a sentence with the coefficient appears below the cell. Add and run cell 3: a figure made with Python.
+5. Add and run cells 4 and 5: they create `results.docx` and `results.pdf`.
+6. Add and run cell 6 to download them. Or: click the folder icon on the left, right-click the file ▸ **Download**.
 
 ## The whole notebook
 

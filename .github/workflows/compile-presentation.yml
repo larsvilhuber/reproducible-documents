@@ -45,7 +45,7 @@ jobs:
       env:
         QUARTO_PRINT_STACK: true
       run: |
-        presentation/render_presentation.sh
+        bash presentation/render_presentation.sh
     - name: Upload HTML Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -55,7 +55,7 @@ jobs:
 
     # the companion article (handout)
     - name: Render Article
-      run: ./run.sh
+      run: bash run.sh
     - name: Upload Article Artifact
       uses: actions/upload-artifact@v4
       with:

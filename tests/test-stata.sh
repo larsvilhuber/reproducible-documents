@@ -6,8 +6,8 @@
 #   STATALIC=/path/to/stata.lic tests/test-stata.sh            # all versions
 #   STATALIC=/path/to/stata.lic tests/test-stata.sh 16 19_5    # only these
 #
-# Part 4 is tested as a do-file made from the notebook cells; the cells
-# themselves run in Colab through PyStata (see tests/test-colab-notebook.sh).
+# Part 4 is tested as a do-file made from the notebook's %%stata cells; all
+# cells (also the Python ones) run through PyStata in tests/test-colab-notebook.sh.
 #
 # When the reference version (last line of tests/stata-versions.txt) is
 # tested, its outputs are saved to examples/0[234]-*/expected/: the slides
@@ -127,7 +127,8 @@ test_part_4() { # image version
   echo "=== Part 4 ($tag): the Colab cells, as a do-file"
   mkdir -p "$TMP/ex04-$tag"
   {
-    for c in examples/04-jupyter-colab/cell-[123]-*.txt; do
+    for c in examples/04-jupyter-colab/cell-*.txt; do
+      head -1 "$c" | grep -q '^%%stata' || continue   # Stata cells only
       grep -v '^%%stata' "$c"
       # for the slides: the table as text, as shown below cell 1
       [[ $c == *cell-1-* ]] && echo 'collect export table1.txt, replace'

@@ -1,0 +1,12 @@
+# A number from Stata, in a sentence (Python, no %%stata)
+from pystata import stata
+from sfi import Scalar
+from IPython.display import Markdown
+
+stata.run("sysuse auto, clear", quietly=True)
+stata.run("regress price mpg weight", quietly=True)
+stata.run("scalar b_mpg = _b[mpg]")
+b_mpg = Scalar.getValue("b_mpg")
+
+Markdown(f"Holding weight constant, one more mile per gallon "
+         f"changes the price by **{b_mpg:.1f}** dollars.")

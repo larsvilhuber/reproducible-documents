@@ -41,7 +41,7 @@ tag_present=$(docker images --format '{{.Tag}}' $space/$repo | grep -x $tag)
 if [[ -z "$tag_present" ]]
 then
   echo "Building $space/$repo:$tag"
-  ./build.sh $tag
+  bash ./build.sh $tag
 else  
   echo "Found $space/$repo:$tag"
 fi

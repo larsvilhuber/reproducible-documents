@@ -52,7 +52,7 @@ jobs:
     - name: Install R Dependencies
       run: Rscript libraries.R
     - name: Render Presentation
-      run: presentation/render_presentation.sh
+      run: bash presentation/render_presentation.sh
     - name: Check that every slide fits
       run: |
         chmod -R a+rwX presentation/_html
@@ -88,10 +88,10 @@ jobs:
       id: license
       env:
         STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
-      run: tests/ci-license.sh
+      run: bash tests/ci-license.sh
     - name: Test parts 2, 3, 4 on Stata ${{ matrix.version }}
       if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-stata.sh ${{ matrix.version }}
+      run: STATALIC="$RUNNER_TEMP/stata.lic" bash tests/test-stata.sh ${{ matrix.version }}
     - name: Remove the license
       if: always()
       run: rm -f "$RUNNER_TEMP/stata.lic"
@@ -106,10 +106,10 @@ jobs:
       id: license
       env:
         STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
-      run: tests/ci-license.sh
+      run: bash tests/ci-license.sh
     - name: Test the Colab notebook with the new cells (PyStata)
       if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-colab-notebook.sh
+      run: STATALIC="$RUNNER_TEMP/stata.lic" bash tests/test-colab-notebook.sh
     - name: Remove the license
       if: always()
       run: rm -f "$RUNNER_TEMP/stata.lic"

@@ -1,7 +1,7 @@
 #!/bin/bash
 # End-to-end test of part 4: run the Colab notebook from
 # larsvilhuber/jupyter-stata-colab, with the cells participants type
-# (examples/04-jupyter-colab/cell-[123]-*.txt) appended by tests/build-notebook.py
+# (examples/04-jupyter-colab/cell-*.txt, except download) appended by tests/build-notebook.py
 # (as in the solutions notebook), through PyStata, in a plain Python container
 # (Colab-like: Stata is installed by the notebook).
 #
@@ -77,7 +77,24 @@ sys.exit(0 if kinds & {"image/svg+xml", "image/png"} else 1)
 EOF
 }
 check "cell 1 shows the figure" cell1_has_figure
+# the Python cells: a sentence with the number from Stata, and a figure
+cell_output_has() { # text-in-the-cell output-type text-in-the-output
+  python3 -I - "$NB" "$1" "$2" "$3" << 'EOF'
+import json, sys
+nb, code, kind, text = sys.argv[1:]
+cell = next(c for c in json.load(open(nb))["cells"] if code in "".join(c["source"]))
+data = [o.get("data", {}).get(kind) for o in cell["outputs"]]
+data = ["".join(d) if isinstance(d, list) else d for d in data if d]
+sys.exit(0 if data and text in "".join(data) else 1)
+EOF
+}
+check "cell 2 writes the sentence with -49.5" cell_output_has "Scalar.getValue" "text/markdown" "**-49.5** dollars"
+check "cell 3 shows the Python figure" cell_output_has "inset_axes" "image/png" ""
+check "price_mpg_hist.png created" test -s "$TMP/nb/price_mpg_hist.png"
 check "results.docx created" test -s "$TMP/nb/results.docx"
 check "results.pdf created" test -s "$TMP/nb/results.pdf"
 check "no license in the notebook" bash -c "! grep -qF \"\$(base64 -w0 '$STATALIC')\" '$NB'"
+# reference output for the slides (the Stata outputs come from tests/test-stata.sh)
+mkdir -p examples/04-jupyter-colab/expected
+cp "$TMP/nb/price_mpg_hist.png" examples/04-jupyter-colab/expected/
 echo "=== Colab notebook test passed"

@@ -12,7 +12,7 @@ set -e
 
 . ./.myconfig.sh
 IMAGE=$space/$repo:$tag
-docker image inspect $IMAGE > /dev/null 2>&1 || ./build.sh $tag
+docker image inspect $IMAGE > /dev/null 2>&1 || bash ./build.sh $tag
 
 TMP=$(mktemp -d -p "$PWD" _test.XXXX)
 trap 'rm -rf "$TMP"' EXIT

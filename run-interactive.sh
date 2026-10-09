@@ -29,7 +29,7 @@ case $USER in
 esac
 
 # build the image if necessary
-docker image inspect $image > /dev/null 2>&1 || ./build.sh $tag
+docker image inspect $image > /dev/null 2>&1 || bash ./build.sh $tag
 
 [[ -d "$PWD/.cache" ]] || mkdir "$PWD/.cache"
 DOCKEREXTRA="$DOCKEREXTRA -v $PWD/.cache:/home/rstudio/.cache"

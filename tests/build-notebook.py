@@ -8,8 +8,8 @@ this notebook, and tests/test-colab-notebook.sh all use them.
 
     python3 tests/build-notebook.py ORIGINAL.ipynb OUTPUT.ipynb [--skip-download]
 
---skip-download leaves out the last cell, which only works on Colab (used by
-tests/test-colab-notebook.sh).
+--skip-download leaves out the download cell, which only works on Colab (used
+by tests/test-colab-notebook.sh).
 """
 
 import argparse
@@ -26,13 +26,16 @@ SOLUTIONS = "stata_colab_solutions.ipynb"
 
 INTRO = f"""## 6. Your turn: a printable table and a figure
 
-The cells below are the solutions to part 4 of the [Reproducible Documents tutorial]({TUTORIAL}): a clean regression table and a figure, exported to Word and PDF. Run the cells above first."""
+The cells below are the solutions to part 4 of the [Reproducible Documents tutorial]({TUTORIAL}): a clean regression table and a figure, a number from Stata in a sentence, a figure made with Python, and exports to Word and PDF. Run the cells above first."""
 
+# keyed by the name of the cell file, without "cell-N-" and ".txt"
 EXPLANATIONS = {
-    "cell-1": "A clean, printable regression table (`etable`), and a figure that is shown below the cell and saved to disk.",
-    "cell-2": "Put the table and the figure into a Word document (`putdocx`). The number in the sentence comes from Stata, not from you.",
-    "cell-3": "The same, as a PDF (`putpdf`).",
-    "cell-4": "Download both files to your computer (Colab only). Or click the folder icon on the left, right-click a file, and choose *Download*.",
+    "table-and-figure": "A clean, printable regression table (`etable`), and a figure that is shown below the cell and saved to disk.",
+    "number-in-sentence": "A number from Stata, in a sentence: Python asks Stata for the coefficient, and writes the sentence (as Markdown) below the cell. No `%%stata` here: this is Python.",
+    "python-figure": "A figure that is hard to make in Stata, made with Python (matplotlib) from the Stata data: the scatter plot, with a histogram of each variable along its axis.",
+    "export-word": "Put the table and the figure into a Word document (`putdocx`). The number in the sentence comes from Stata, not from you.",
+    "export-pdf": "The same, as a PDF (`putpdf`).",
+    "download": "Download both files to your computer (Colab only). Or click the folder icon on the left, right-click a file, and choose *Download*.",
 }
 
 
@@ -67,8 +70,8 @@ def main():
 
     nb["cells"].append(markdown(INTRO))
     for path in sorted(glob.glob(os.path.join(CELLS, "cell-*.txt"))):
-        key = os.path.basename(path)[:6]
-        if args.skip_download and key == "cell-4":
+        key = os.path.basename(path)[len("cell-N-"):-len(".txt")]
+        if args.skip_download and key == "download":
             continue
         nb["cells"].append(markdown(EXPLANATIONS[key]))
         with open(path) as fh:

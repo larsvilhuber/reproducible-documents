@@ -74,7 +74,8 @@ else
   echo "Skipping part 3: run tests/test-stata.sh first"
 fi
 
-# Part 4: Colab (the figure of cell 1, the Word document of cell 2)
+# Part 4: Colab (the figure of cell 1, the Word document of cell 4,
+# the Python figure of cell 3)
 EX04=examples/04-jupyter-colab/expected
 if [[ -f $EX04/results.docx ]]; then
   cp "$EX04/price_mpg.png" "$IMG/ex04-figure.png"
@@ -82,4 +83,10 @@ if [[ -f $EX04/results.docx ]]; then
   docx2png "$EX04/results.docx" "$IMG/ex04-docx.png" 90 90 760 900
 else
   echo "Skipping part 4: run tests/test-stata.sh first"
+fi
+if [[ -f $EX04/price_mpg_hist.png ]]; then
+  cp "$EX04/price_mpg_hist.png" "$IMG/ex04-python-figure.png"
+  echo "Created $IMG/ex04-python-figure.png"
+else
+  echo "Skipping the Python figure: run tests/test-colab-notebook.sh first"
 fi

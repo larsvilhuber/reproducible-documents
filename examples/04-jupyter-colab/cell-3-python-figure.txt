@@ -1,0 +1,19 @@
+# A figure that is hard to make in Stata (Python, matplotlib):
+# the scatter plot, with a histogram of each variable along its axis
+import matplotlib.pyplot as plt
+from pystata import stata
+
+stata.run("sysuse auto, clear", quietly=True)
+auto = stata.pdataframe_from_data()        # Stata data -> pandas
+
+fig, ax = plt.subplots(figsize=(7, 6))
+ax.scatter(auto["mpg"], auto["price"])
+ax.set_xlabel("Mileage (mpg)")
+ax.set_ylabel("Price (USD)")
+top = ax.inset_axes([0, 1.02, 1, 0.2], sharex=ax)      # above
+right = ax.inset_axes([1.02, 0, 0.2, 1], sharey=ax)    # on the right
+top.hist(auto["mpg"], bins=15)
+right.hist(auto["price"], bins=15, orientation="horizontal")
+top.axis("off")
+right.axis("off")
+fig.savefig("price_mpg_hist.png", dpi=200, bbox_inches="tight")

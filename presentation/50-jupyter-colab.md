@@ -105,22 +105,65 @@ image_or("images/ex04-figure.png",
   '{height="520"}')
 ```
 
-## Cell 2: export to Word
+## Cell 2: a number from Stata, in a sentence
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-2-export-word.txt", lang = "stata")
+show_file("examples/04-jupyter-colab/cell-2-number-in-sentence.txt", lang = "python")
 ```
 
-## Cell 3: export to PDF
+- Python (no `%%stata`) asks Stata for `_b[mpg]`, and writes a sentence
+- `{b_mpg:.1f}` is like Stata's `%5.1f`
+
+## What you should see: the sentence
+
+Below the cell, as formatted text:
+
+> Holding weight constant, one more mile per gallon changes the price by **`r AUTO_COEF_MPG`** dollars.
+
+- The number comes from Stata: **never typed**
+- When Quarto renders the notebook (see the bonus slide), the sentence is part of the document
+
+## Cell 3: a figure made with Python
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-3-export-pdf.txt", lang = "stata")
+show_file("examples/04-jupyter-colab/cell-3-python-figure.txt", from = 1, to = "set_ylabel", lang = "python")
 ```
 
-## Cell 4: download the files
+*Continued on the next slide, in the same cell.*
+
+## Cell 3 (continued)
 
 ```{r, echo=FALSE, results='asis'}
-show_file("examples/04-jupyter-colab/cell-4-download.txt", lang = "python")
+show_file("examples/04-jupyter-colab/cell-3-python-figure.txt", from = "top = ax.inset_axes", lang = "python")
+```
+
+- A histogram of each variable, along its axis: hard to do in Stata
+- `stata.pdataframe_from_data()`: the Stata data, for Python
+
+## What you should see: the Python figure
+
+```{r, echo=FALSE, results='asis'}
+image_or("images/ex04-python-figure.png",
+  "- The scatter plot of price against mileage\n- Above it, the distribution of mileage; on the right, the distribution of price\n- Also saved as `price_mpg_hist.png`",
+  '{height="540"}')
+```
+
+## Cell 4: export to Word
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/04-jupyter-colab/cell-4-export-word.txt", lang = "stata")
+```
+
+## Cell 5: export to PDF
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/04-jupyter-colab/cell-5-export-pdf.txt", lang = "stata")
+```
+
+## Cell 6: download the files
+
+```{r, echo=FALSE, results='asis'}
+show_file("examples/04-jupyter-colab/cell-6-download.txt", lang = "python")
 ```
 
 No `%%stata` here: this is Python, and only works on Colab.
