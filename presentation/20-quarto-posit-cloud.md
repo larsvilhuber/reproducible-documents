@@ -24,7 +24,7 @@
 - Paste the URL: <`r REPOSITORY_URL`>
 - Click [OK]{.menu}, and wait a minute
 
-You now have your own copy. Nothing you do changes the original.
+This is *your* copy. You cannot save it back to *my* copy.
 
 ## Step 3: Install the R packages (once)
 
