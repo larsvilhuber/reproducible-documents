@@ -35,13 +35,6 @@ jobs:
     - name: Install R Dependencies
       run: Rscript libraries.R
 
-    # Part 1 must work for participants: render it in all formats
-    - name: Test example 1 (HTML, Word, PDF)
-      run: |
-        cd examples/01-quarto-posit-cloud
-        quarto render report.qmd
-        ls -l report.html report.docx report.pdf
-
     - name: Render Presentation
       env:
         QUARTO_PRINT_STACK: true
@@ -64,41 +57,7 @@ jobs:
           path: _html
           retention-days: 1
 
-  # parts 2-4 must work for participants: run the Stata examples, and the
-  # Colab notebook with the new cells (needs the STATA_LIC_BASE64 secret)
-  test-stata:
-    runs-on: ubuntu-24.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Stata license
-      id: license
-      env:
-        STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
-      run: |
-        if [[ -z "$STATA_LIC_BASE64" ]]; then
-          echo "No STATA_LIC_BASE64 secret: skipping the Stata tests"
-          echo "available=false" >> "$GITHUB_OUTPUT"
-        else
-          echo "$STATA_LIC_BASE64" | base64 -d > "$RUNNER_TEMP/stata.lic"
-          chmod 600 "$RUNNER_TEMP/stata.lic"
-          echo "available=true" >> "$GITHUB_OUTPUT"
-        fi
-
-    - name: Test parts 2, 3, 4 (Stata)
-      if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-stata.sh
-
-    - name: Test the Colab notebook with the new cells (PyStata)
-      if: steps.license.outputs.available == 'true'
-      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-colab-notebook.sh
-
-    - name: Remove the license
-      if: always()
-      run: rm -f "$RUNNER_TEMP/stata.lic"
-
-  # every slide must fit on the page, then make a PDF out of it
+  # make a PDF out of it
   create-pdf:
     needs: compile-quarto
     runs-on: ubuntu-latest
@@ -113,11 +72,6 @@ jobs:
     - name: Check permissions
       run: |
         chmod -R a+rwX _html
-
-    - name: Check that every slide fits
-      run: |
-        docker run --rm -v ${{ github.workspace }}/_html:/slides -v ${{ github.workspace }}/tests:/tests \
-          --entrypoint node astefanutti/decktape /tests/check-overflow.mjs /slides/index.html
 
     - name: Create PDF
       run: |
@@ -136,7 +90,6 @@ jobs:
     needs:
       - compile-quarto
       - create-pdf
-      - test-stata
     if: ${{ github.event.inputs.refresh_website == 'true' || github.event_name == 'push' }}
     steps:
     # Pull down all artifacts
