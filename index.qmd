@@ -26,6 +26,10 @@ GITHUB_REPOSITORY <- Sys.getenv("GITHUB_REPOSITORY")
 if (GITHUB_REPOSITORY == "") GITHUB_REPOSITORY <- "larsvilhuber/reproducible-documents"
 GITHUB_REPOSITORY_PARTS <- strsplit(GITHUB_REPOSITORY, "/")[[1]]
 REPOSITORY_URL <- paste0("https://github.com/", GITHUB_REPOSITORY)
+EXAMPLES_URL <- paste0(REPOSITORY_URL, "/tree/main/examples/")
+# the links in the README of larsvilhuber/jupyter-stata-colab
+COLAB_URL <- "https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_example.ipynb"
+BINDER_URL <- "https://mybinder.org/v2/gh/larsvilhuber/jupyter-stata-colab/HEAD?urlpath=%2Fdoc%2Ftree%2Fstata_colab_example.ipynb"
 WEBSITE_URL <- paste0("https://", GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2])
 
 # Numbers quoted in the text are computed, not typed (same regression as in the examples)
@@ -58,10 +62,10 @@ documents, and is never typed by hand (not even here).
 
 | | You write | It runs on | You get |
 |:--|:--|:--|:--|
-| 1 | Quarto (Markdown + R) | posit.cloud (browser) | HTML, Word, PDF |
-| 2 | Stata do-file + LaTeX | your laptop | PDF |
-| 3 | Stata `dyndoc` (Markdown) | your laptop | Word |
-| 4 | Jupyter notebook + Stata | Colab or Binder (browser) | Word, PDF |
+| 1 | [Quarto (Markdown + R)](`r EXAMPLES_URL`01-quarto-posit-cloud) | [posit.cloud](https://posit.cloud) (browser) | HTML, Word, PDF |
+| 2 | [Stata do-file + LaTeX](`r EXAMPLES_URL`02-stata-latex-macros) | your laptop | PDF |
+| 3 | [Stata `dyndoc` (Markdown)](`r EXAMPLES_URL`03-stata-dyndoc-word) | your laptop | Word |
+| 4 | [Jupyter notebook + Stata](`r EXAMPLES_URL`04-jupyter-colab) | [Colab](`r COLAB_URL`) or [Binder](`r BINDER_URL`) (browser) | Word, PDF |
 
 You need a web browser, a free [posit.cloud](https://posit.cloud) account,
 Stata 16 or later on your laptop, and your Stata license file (for part 4,

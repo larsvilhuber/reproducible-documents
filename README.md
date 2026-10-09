@@ -12,7 +12,7 @@ A hands-on tutorial for researchers who use Stata: four ways to put your results
 | 1. Quarto (Markdown + R) on posit.cloud | [`examples/01-quarto-posit-cloud/`](examples/01-quarto-posit-cloud/) | A free [posit.cloud](https://posit.cloud) account |
 | 2. Stata → LaTeX macros | [`examples/02-stata-latex-macros/`](examples/02-stata-latex-macros/) | Stata on your laptop; LaTeX or a free [Overleaf](https://www.overleaf.com) account |
 | 3. Stata `dyndoc` → Word | [`examples/03-stata-dyndoc-word/`](examples/03-stata-dyndoc-word/) | Stata 16 or later on your laptop |
-| 4. Jupyter + Stata on Google Colab or Binder | [`examples/04-jupyter-colab/`](examples/04-jupyter-colab/) | Your Stata license; a Google account for Colab (Binder needs none) |
+| 4. Jupyter + Stata on [Google Colab](https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_example.ipynb) or [Binder](https://mybinder.org/v2/gh/larsvilhuber/jupyter-stata-colab/HEAD?urlpath=%2Fdoc%2Ftree%2Fstata_colab_example.ipynb) | [`examples/04-jupyter-colab/`](examples/04-jupyter-colab/) | Your Stata license; a Google account for Colab (Binder needs none) |
 
 To get the files on your laptop: click the green **Code** button above, then **Download ZIP**, and unzip.
 

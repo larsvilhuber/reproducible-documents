@@ -4,10 +4,10 @@
 
 |       | You write | It runs on | You get |
 |:------|:----------|:-----------|:--------|
-| **1** | Quarto (Markdown + R) | posit.cloud (browser) | HTML, Word, PDF |
-| **2** | Stata do-file + LaTeX | your laptop | PDF |
-| **3** | Stata `dyndoc` (Markdown) | your laptop | Word |
-| **4** | Jupyter notebook + Stata | Colab or Binder (browser) | Word, PDF |
+| **1** | [Quarto (Markdown + R)](`r EXAMPLES_URL`01-quarto-posit-cloud) | [posit.cloud](https://posit.cloud) (browser) | HTML, Word, PDF |
+| **2** | [Stata do-file + LaTeX](`r EXAMPLES_URL`02-stata-latex-macros) | your laptop | PDF |
+| **3** | [Stata `dyndoc` (Markdown)](`r EXAMPLES_URL`03-stata-dyndoc-word) | your laptop | Word |
+| **4** | [Jupyter notebook + Stata](`r EXAMPLES_URL`04-jupyter-colab) | [Colab](`r COLAB_URL`) or [Binder](`r BINDER_URL`) (browser) | Word, PDF |
 
 From simple to more complex. We will use Stata's `auto` dataset for consistency, in each example.
 

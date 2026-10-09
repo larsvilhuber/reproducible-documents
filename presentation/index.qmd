@@ -43,6 +43,7 @@ GITHUB_REPOSITORY <- Sys.getenv("GITHUB_REPOSITORY")
 if (GITHUB_REPOSITORY == "") GITHUB_REPOSITORY <- "larsvilhuber/reproducible-documents"
 GITHUB_REPOSITORY_PARTS <- strsplit(GITHUB_REPOSITORY, "/")[[1]]
 REPOSITORY_URL <- paste0("https://github.com/", GITHUB_REPOSITORY)
+EXAMPLES_URL <- paste0(REPOSITORY_URL, "/tree/main/examples/")
 
 WEBSITE_URL <- paste0("https://", GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2], "/", SUBDIRECTORY)
 WEBSITE_SHORT <- paste0(GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2], "/", SUBDIRECTORY)
