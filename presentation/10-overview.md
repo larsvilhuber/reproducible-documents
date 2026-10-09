@@ -9,7 +9,7 @@
 | **3** | Stata `dyndoc` (Markdown) | your laptop | Word |
 | **4** | Jupyter notebook + Stata | Colab or Binder (browser) | Word, PDF |
 
-From simple to more complex. Same data everywhere: Stata's `auto` dataset.
+From simple to more complex. We will use Stata's `auto` dataset for consistency, in each example.
 
 ## Do not type numbers
 

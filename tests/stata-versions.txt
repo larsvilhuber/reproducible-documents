@@ -1,0 +1,11 @@
+# Stata versions the examples are tested on, by tests/test-stata.sh
+# (locally, and in the CI matrix of .github/workflows/tests.yml).
+# Part 4 needs Stata 17 or later (etable, putdocx collect).
+# The last line is the reference version: its outputs are saved to examples/*/expected/.
+#
+# version  image                                  parts
+16         dataeditors/stata16:2023-06-13         2 3
+17         dataeditors/stata17:2024-05-21         2 3 4
+18         dataeditors/stata18-mp-i:2026-07-28    2 3 4
+19         dataeditors/stata19-mp-i:2026-08-12    2 3 4
+19_5       dataeditors/stata19_5-mp-i:2026-08-12  2 3 4

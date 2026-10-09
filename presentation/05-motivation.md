@@ -61,4 +61,4 @@ Literate programming: text and code in one place.
 - **Jupyter** notebooks
 - Stata's own **dyndoc**
 
-Today: you will try all of these.
+Today: you will try **these**.
