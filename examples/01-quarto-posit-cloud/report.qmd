@@ -1,0 +1,72 @@
+---
+title: "My First Reproducible Document"
+author: "Your Name"
+date: today
+format:
+  html:
+    embed-resources: true
+  docx: default
+  typst: default
+---
+
+## About this document
+
+This is a **Quarto** document. You write the text in *Markdown*, and you put
+code into *chunks*. When you click **Render**, Quarto runs the code and puts
+the numbers, tables, and figures into the document. No copy and paste!
+
+The code is written in R, but every chunk shows the Stata command that does
+the same thing.
+
+## The data
+
+```{r}
+#| label: load-data
+# Stata: sysuse auto, clear
+library(haven)
+auto <- read_dta("https://www.stata-press.com/data/r19/auto.dta")
+```
+
+We use the 1978 automobile data that ships with Stata. The data contain
+`r nrow(auto)` cars, and the average price is `r round(mean(auto$price))`
+dollars.
+
+## Summary statistics
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: "Summary statistics"
+# Stata: summarize price mpg weight
+vars <- c("price", "mpg", "weight")
+stats <- data.frame(
+  Variable = vars,
+  Mean = sapply(auto[vars], mean),
+  SD   = sapply(auto[vars], sd),
+  Min  = sapply(auto[vars], min),
+  Max  = sapply(auto[vars], max)
+)
+knitr::kable(stats, digits = 1, row.names = FALSE)
+```
+
+## A regression
+
+```{r}
+#| label: tbl-regression
+#| tbl-cap: "Regression of price on mileage and weight"
+# Stata: regress price mpg weight
+model <- lm(price ~ mpg + weight, data = auto)
+knitr::kable(summary(model)$coefficients, digits = 2)
+```
+
+Holding weight constant, one more mile per gallon changes the price by
+`r round(coef(model)["mpg"], 1)` dollars (@tbl-regression).
+
+## A figure
+
+```{r}
+#| label: fig-scatter
+#| fig-cap: "Price and fuel efficiency"
+# Stata: twoway (scatter price mpg) (lfit price mpg)
+plot(auto$mpg, auto$price, xlab = "Mileage (mpg)", ylab = "Price (USD)")
+abline(lm(price ~ mpg, data = auto))
+```

@@ -1,0 +1,4 @@
+# Download the two files to your computer (Colab only)
+from google.colab import files
+files.download("results.docx")
+files.download("results.pdf")

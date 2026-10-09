@@ -1,0 +1,22 @@
+## Follow along
+
+:::: {.columns}
+
+::: {.column width="30%"}
+
+:::
+
+::: {.column width="40%"}
+
+![](qrcode.svg){width="350" height="350"}
+
+
+:::
+
+::: {.column width="30%"}
+
+:::
+
+::::
+
+[`r WEBSITE_SHORT`](`r WEBSITE_URL`) ([PDF](presentation.pdf), [handout](article/))

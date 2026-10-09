@@ -1,0 +1,99 @@
+---
+title: "Reproducible Documents"
+subtitle: "A hands-on tutorial for Stata users"
+author:
+  - "Lars Vilhuber"
+date: today
+format:
+  revealjs:
+    width: 1280
+    height: 720
+    margin: 0.05
+    code-overflow: wrap
+    code-line-numbers: false
+    reference-location: document
+    center: true
+    transition: slide
+    theme: [night, style.css]
+    logo: logo.png
+    footer: "larsvilhuber.github.io/reproducible-documents"
+    slide-number: true
+    preview-links: false
+---
+
+
+```{r config,include=FALSE}
+library(here)
+library(knitr)
+library(qrcode)
+
+source(here::here("presentation", "helpers.R"))
+
+# The repository name
+
+message(Sys.getenv("GITHUB_REPOSITORY"))
+
+# Process the repository name to generate the URL
+# - split the two components
+# - combine them into a URL with 'github.io' in the middle
+
+SUBDIRECTORY <- "" # Leave this empty if this file is in the main directory of the repository
+
+GITHUB_REPOSITORY <- Sys.getenv("GITHUB_REPOSITORY")
+if (GITHUB_REPOSITORY == "") GITHUB_REPOSITORY <- "larsvilhuber/reproducible-documents"
+GITHUB_REPOSITORY_PARTS <- strsplit(GITHUB_REPOSITORY, "/")[[1]]
+REPOSITORY_URL <- paste0("https://github.com/", GITHUB_REPOSITORY)
+
+WEBSITE_URL <- paste0("https://", GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2], "/", SUBDIRECTORY)
+WEBSITE_SHORT <- paste0(GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2], "/", SUBDIRECTORY)
+
+# The notebook used in part 4
+COLAB_REPOSITORY_URL <- "https://github.com/larsvilhuber/jupyter-stata-colab"
+COLAB_URL <- "https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_example.ipynb"
+BINDER_URL <- "https://mybinder.org/v2/gh/larsvilhuber/jupyter-stata-colab/HEAD?urlpath=%2Fdoc%2Ftree%2Fstata_colab_example.ipynb"
+COLAB_SOLUTIONS_URL <- "https://colab.research.google.com/github/larsvilhuber/jupyter-stata-colab/blob/main/stata_colab_solutions.ipynb"
+
+# Numbers quoted on the slides are computed, not typed: same data and
+# regression as in all four examples (OLS, so identical to Stata's regress)
+auto <- haven::read_dta("https://www.stata-press.com/data/r19/auto.dta")
+AUTO_N <- nrow(auto)
+AUTO_COEF_MPG <- sprintf("%.1f", coef(lm(price ~ mpg + weight, data = auto))["mpg"])
+
+# QR code pointing to the website
+qrcode::generate_svg(qrcode::qr_code(WEBSITE_URL),
+                     filename = here::here("presentation", "qrcode.svg"),
+                     show = FALSE)
+```
+
+```{r, child=c(here::here("presentation",'00-follow-along.md'))}
+```
+
+```{r, child=c(here::here("presentation",'00-extra-title-slide.md'))}
+```
+
+```{r, child=c(here::here("presentation",'05-motivation.md'))}
+```
+
+```{r, child=c(here::here("presentation",'10-overview.md'))}
+```
+
+```{r, child=c(here::here("presentation",'20-quarto-posit-cloud.md'))}
+```
+
+```{r, child=c(here::here("presentation",'30-stata-latex-macros.md'))}
+```
+
+```{r, child=c(here::here("presentation",'40-stata-dyndoc-word.md'))}
+```
+
+```{r, child=c(here::here("presentation",'50-jupyter-colab.md'))}
+```
+
+```{r, child=c(here::here("presentation",'90-wrapup.md'))}
+```
+
+# The end!
+
+
+```{r, child=c(here::here('99-links.md'))}
+```

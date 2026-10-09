@@ -1,0 +1,99 @@
+/*-- scss:defaults --*/
+
+/* Slightly smaller than the default, so that slides fit without scrolling */
+$presentation-font-size-root: 34px;
+$code-block-font-size: 0.75em;
+
+/*-- scss:rules --*/
+
+/* from the template */
+
+.warning {
+  background-color: #f5b3b8;
+}
+
+.reveal strong {
+  color: black;
+  background-color: lemonchiffon;
+  font-weight: bolder;
+}
+
+.reveal em {
+  color: black;
+  background-color: rgb(205, 226, 255);
+  font-weight: bolder;
+}
+
+.reveal #title-slide .title {
+  font-size: 1.3em;
+}
+
+/* smaller slide titles leave more room for content */
+.reveal h2 {
+  font-size: 1.3em;
+}
+
+/* inline code, e.g. `report.qmd`, readable from the back of the room */
+.reveal :not(pre) > code {
+  font-size: 0.85em;
+}
+
+.white-col {
+  background-color: white;
+}
+
+/* for this presentation */
+
+/* Never hide code behind a scrollbar: if a code block is too long, it must
+   be split across slides. tests/check-overflow.mjs catches violations. */
+.reveal pre code,
+.reveal div.sourceCode pre code {
+  max-height: none !important;
+  overflow: visible !important;
+  /* long lines wrap, instead of running off the slide */
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+}
+
+/* Things to click: [New Project]{.menu} */
+.reveal .menu {
+  background-color: #2a5d9f;
+  color: white;
+  border-radius: 6px;
+  padding: 0.05em 0.35em;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
+/* Boxes in a pipeline: [Stata]{.box} → [paper.pdf]{.box} */
+.reveal .box {
+  border: 2px solid #eb7826;
+  border-radius: 8px;
+  padding: 0.05em 0.35em;
+  white-space: nowrap;
+}
+
+/* A rule to remember */
+.reveal .bigrule {
+  font-size: 1.5em;
+  text-align: center;
+  margin: 1em 0;
+}
+
+/* Small print under a slide, e.g., sources */
+.reveal .source {
+  font-size: 0.6em;
+  color: #aaaaaa;
+}
+
+/* Screenshots on the dark background */
+.reveal img.screenshot {
+  border: 1px solid #888888;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Stata output (e.g., a table): never wrap, or the columns break */
+.reveal .stataout pre code {
+  white-space: pre !important;
+  font-size: 0.8em;
+}

@@ -1,0 +1,15 @@
+%%stata
+* The same, as a PDF
+estimates restore m2
+putpdf clear
+putpdf begin
+putpdf paragraph, halign(center)
+putpdf text ("Car prices and fuel efficiency"), bold
+putpdf paragraph
+putpdf text ("Holding weight constant, one more mpg changes the price by ")
+putpdf text (_b[mpg]), nformat(%5.1f)
+putpdf text (" dollars (Table 1, column 2).")
+putpdf collect
+putpdf paragraph, halign(center)
+putpdf image price_mpg.png, width(6)
+putpdf save results.pdf, replace

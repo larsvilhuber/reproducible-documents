@@ -1,0 +1,25 @@
+\documentclass[11pt]{article}
+
+% None of the numbers in this paper are typed by hand.
+% They are defined in results_macros.tex, which policy_macros.do writes.
+\input{results_macros.tex}
+
+\title{A Tiny Reproducible Paper}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Results}
+
+In our experiment, welfare increases by \WelfareA{} under policy A
+(reassigning \NReassA{} units), while it increases by \WelfareB{} under
+policy B (reassigning \NReassB{} units). Policy \PreferredPolicy{} is
+therefore preferred.
+
+In the 1978 automobile data (\NObs{} cars), one more mile per gallon is
+associated with a price change of $\CoefMpg$ dollars (standard error
+\SeMpg), holding weight constant.
+
+\end{document}

@@ -1,0 +1,184 @@
+name: deploy-presentation
+
+# Only run this when the main branch changes
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+    inputs:
+      refresh_website:
+        type: boolean
+        description: 'Refresh the website'
+        default: true
+
+# This job installs dependencies, renders the slides, and publishes them to GitHub Pages
+jobs:
+
+  compile-quarto:
+    runs-on: ubuntu-24.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
+    - name: Install R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.6.1'
+        use-public-rspm: true
+
+    # Same script as on posit.cloud and in the Dockerfile
+    # renv.lock has the versions; libraries.R installs them
+    - name: Install R Dependencies
+      run: Rscript libraries.R
+
+    # Part 1 must work for participants: render it in all formats
+    - name: Test example 1 (HTML, Word, PDF)
+      run: |
+        cd examples/01-quarto-posit-cloud
+        quarto render report.qmd
+        ls -l report.html report.docx report.pdf
+
+    - name: Render Presentation
+      env:
+        QUARTO_PRINT_STACK: true
+      run: |
+        presentation/render_presentation.sh
+    - name: Upload HTML Artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifact-html
+          path: presentation/_html
+          retention-days: 1
+
+    # the companion article (handout)
+    - name: Render Article
+      run: ./run.sh
+    - name: Upload Article Artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifact-article
+          path: _html
+          retention-days: 1
+
+  # parts 2-4 must work for participants: run the Stata examples, and the
+  # Colab notebook with the new cells (needs the STATA_LIC_BASE64 secret)
+  test-stata:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Stata license
+      id: license
+      env:
+        STATA_LIC_BASE64: ${{ secrets.STATA_LIC_BASE64 }}
+      run: |
+        if [[ -z "$STATA_LIC_BASE64" ]]; then
+          echo "No STATA_LIC_BASE64 secret: skipping the Stata tests"
+          echo "available=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "$STATA_LIC_BASE64" | base64 -d > "$RUNNER_TEMP/stata.lic"
+          chmod 600 "$RUNNER_TEMP/stata.lic"
+          echo "available=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Test parts 2, 3, 4 (Stata)
+      if: steps.license.outputs.available == 'true'
+      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-stata.sh
+
+    - name: Test the Colab notebook with the new cells (PyStata)
+      if: steps.license.outputs.available == 'true'
+      run: STATALIC="$RUNNER_TEMP/stata.lic" tests/test-colab-notebook.sh
+
+    - name: Remove the license
+      if: always()
+      run: rm -f "$RUNNER_TEMP/stata.lic"
+
+  # every slide must fit on the page, then make a PDF out of it
+  create-pdf:
+    needs: compile-quarto
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Download quarto artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: artifact-html
+        path: _html
+    - name: Check permissions
+      run: |
+        chmod -R a+rwX _html
+
+    - name: Check that every slide fits
+      run: |
+        docker run --rm -v ${{ github.workspace }}/_html:/slides -v ${{ github.workspace }}/tests:/tests \
+          --entrypoint node astefanutti/decktape /tests/check-overflow.mjs /slides/index.html
+
+    - name: Create PDF
+      run: |
+        docker run --rm -v ${{ github.workspace }}/_html:/slides astefanutti/decktape \
+          --chrome-arg=--no-sandbox --chrome-arg=--disable-gpu --size 1280x720 \
+          /slides/index.html /slides/index.pdf
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact-presentation-pdf
+        path: _html/index.pdf
+
+  deploy-all:
+    runs-on: ubuntu-latest
+    needs:
+      - compile-quarto
+      - create-pdf
+      - test-stata
+    if: ${{ github.event.inputs.refresh_website == 'true' || github.event_name == 'push' }}
+    steps:
+    # Pull down all artifacts
+    - name: Download HTML Artifacts
+      uses: actions/download-artifact@v4
+      with:
+            path: .
+            pattern: artifact-html
+    - name: Download Article
+      uses: actions/download-artifact@v4
+      with:
+            path: .
+            pattern: artifact-article
+    - name: Download Pres PDF
+      uses: actions/download-artifact@v4
+      with:
+            path: .
+            pattern: artifact-presentation-pdf
+    - name: Move stuff
+      run: |
+          set -ev
+          ls -lR
+          mv artifact-html website
+          mv artifact-presentation-pdf/index.pdf website/presentation.pdf
+          mv artifact-article website/article
+    - name: prepare GitHub Pages action
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./website
+
+  publish:
+    needs: deploy-all
+    if: ${{ github.event.inputs.refresh_website == 'true' || github.event_name == 'push' }}
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

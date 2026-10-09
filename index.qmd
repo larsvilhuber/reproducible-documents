@@ -1,0 +1,108 @@
+---
+title: "Reproducible Documents"
+subtitle: "A hands-on tutorial for Stata users"
+author:
+  - Lars Vilhuber
+date: today
+format:
+  html:
+    toc: true
+    code-overflow: wrap
+    reference-location: document
+---
+
+```{r config,include=FALSE}
+library(here)
+
+# The repository name
+
+message(Sys.getenv("GITHUB_REPOSITORY"))
+
+# Process the repository name to generate the URL
+# - split the two components
+# - combine them into a URL with 'github.io' in the middle
+
+GITHUB_REPOSITORY <- Sys.getenv("GITHUB_REPOSITORY")
+if (GITHUB_REPOSITORY == "") GITHUB_REPOSITORY <- "larsvilhuber/reproducible-documents"
+GITHUB_REPOSITORY_PARTS <- strsplit(GITHUB_REPOSITORY, "/")[[1]]
+REPOSITORY_URL <- paste0("https://github.com/", GITHUB_REPOSITORY)
+WEBSITE_URL <- paste0("https://", GITHUB_REPOSITORY_PARTS[1], ".github.io/", GITHUB_REPOSITORY_PARTS[2])
+
+# Numbers quoted in the text are computed, not typed (same regression as in the examples)
+auto <- haven::read_dta("https://www.stata-press.com/data/r19/auto.dta")
+AUTO_COEF_MPG <- sprintf("%.1f", coef(lm(price ~ mpg + weight, data = auto))["mpg"])
+```
+
+<!--
+This is the article-length, textual companion to the slide deck in `presentation/`.
+It follows the same structure. The step-by-step instructions are the README files
+in examples/, included below, so that there is only one copy of them.
+-->
+
+# Introduction
+
+> In our experiment, welfare increases by 2.3% under policy A, while it increases by 1.1% under policy B.
+
+Where do these numbers come from? In most papers, someone ran the analysis,
+looked at the output, and typed the numbers into the text. Over the course of a
+paper's life, the analysis changes, and the numbers in the text are not always
+updated. Data Editors find this often: numbers in the text that cannot be traced
+to the code, or that no longer match it. The remedy is simple, in the words of
+the JPE Data Editor: "never type a numeric result. Read it from disk"
+([Oswald 2026](https://jpedataeditor.github.io/posts/20260910-latex-macros/)).
+
+This tutorial walks through four ways to do that, from simple to more complex.
+All four use the same data (Stata's `auto` dataset) and the same regression
+(`regress price mpg weight`), so the same number, `r AUTO_COEF_MPG`, appears in all four
+documents, and is never typed by hand (not even here).
+
+| | You write | It runs on | You get |
+|:--|:--|:--|:--|
+| 1 | Quarto (Markdown + R) | posit.cloud (browser) | HTML, Word, PDF |
+| 2 | Stata do-file + LaTeX | your laptop | PDF |
+| 3 | Stata `dyndoc` (Markdown) | your laptop | Word |
+| 4 | Jupyter notebook + Stata | Colab or Binder (browser) | Word, PDF |
+
+You need a web browser, a free [posit.cloud](https://posit.cloud) account,
+Stata 16 or later on your laptop, and your Stata license file (for part 4,
+which runs on Google Colab with a Google account, or on Binder without one). To compile LaTeX without installing it, a free
+[Overleaf](https://www.overleaf.com) account helps. The slides are at
+<`r WEBSITE_URL`>, and all files are in <`r REPOSITORY_URL`>.
+
+```{r, child=here::here("examples", "01-quarto-posit-cloud", "README.md")}
+```
+
+```{r, child=here::here("examples", "02-stata-latex-macros", "README.md")}
+```
+
+```{r, child=here::here("examples", "03-stata-dyndoc-word", "README.md")}
+```
+
+```{r, child=here::here("examples", "04-jupyter-colab", "README.md")}
+```
+
+# Which one should I use?
+
+If you write your paper in LaTeX, let Stata write the numbers as LaTeX macros
+(part 2). If you write in Word, Stata's `dyndoc` (part 3) or `putdocx` (part 4)
+create the document for you. Jupyter notebooks (part 4) are good to explore, and
+to show your work step by step. Quarto (part 1) creates HTML, Word, PDF, and
+slides from one source. They can be combined: Stata writes the numbers, Quarto
+writes the paper.
+
+Whatever the tool, the ideas are the same:
+
+- **One source of truth**: each number lives in exactly one place.
+- **Never type a number**: the code puts it into the document.
+- **Re-run everything**: from data to document, in one go.
+- **Keep it all**: code, generated files, and documents go into your replication package.
+
+## Learn more
+
+- Quarto: <https://quarto.org/docs/get-started/>
+- Stata `dyndoc`, `putdocx`, `putpdf`, `etable`: `help dyndoc` etc. in Stata, and the [Reporting manual](https://www.stata.com/manuals/rpt.pdf)
+- PyStata (Stata in Jupyter): <https://www.stata.com/python/pystata19/>
+- Oswald, Florian. 2026. "Are Your in-Text Numbers Correct? Do They Match Your Table?" JPE Data Editor Blog. <https://jpedataeditor.github.io/posts/20260910-latex-macros/>
+
+```{r, child=c(here::here('99-links.md'))}
+```

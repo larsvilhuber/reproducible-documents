@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Reproducible Documents: A hands-on tutorial for Stata users
+message: >-
+  If you use these materials, please cite them as below.
+type: presentation
+authors:
+  - given-names: Lars
+    family-names: Vilhuber
+    email: lars.vilhuber@cornell.edu
+    affiliation: Cornell University
+    orcid: 'https://orcid.org/0000-0001-5733-8932'
+repository-code: >-
+  https://github.com/larsvilhuber/reproducible-documents/
+abstract: >-
+  Numbers typed by hand into a paper drift out of date, and cannot be traced
+  to the code that produced them. This tutorial walks researchers who know
+  Stata through four ways to create documents in which every number comes
+  from the code: Quarto on posit.cloud, Stata-generated LaTeX macros, Stata's
+  dyndoc with Word output, and Jupyter notebooks running Stata on Google Colab.
+license: CC-BY-NC-4.0

@@ -1,0 +1,5 @@
+
+## Source
+
+- This document's source: <`r REPOSITORY_URL`>
+- Licensed under [![CC BY-NC 4.0](images/cc-by-nc-80x15.png)](https://creativecommons.org/licenses/by-nc/4.0/)

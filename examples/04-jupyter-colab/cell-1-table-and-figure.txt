@@ -1,0 +1,19 @@
+%%stata
+* Estimate three models and store them
+sysuse auto, clear
+quietly regress price mpg
+estimates store m1
+quietly regress price mpg weight
+estimates store m2
+quietly regress price mpg weight i.foreign
+estimates store m3
+
+* A clean, printable regression table
+etable, estimates(m1 m2 m3) column(index) varlabel  ///
+    showstars showstarsnote mstat(N) mstat(r2)      ///
+    title("Table 1: Car prices and fuel efficiency")
+
+* A figure: shown below the cell, and saved to disk
+twoway (scatter price mpg) (lfit price mpg), by(foreign, note(""))  ///
+    ytitle("Price (USD)") xtitle("Mileage (mpg)")
+graph export price_mpg.png, replace width(1600)
