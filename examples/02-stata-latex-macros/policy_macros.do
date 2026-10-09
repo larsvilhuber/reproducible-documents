@@ -64,7 +64,6 @@ file write `fh' "\newcommand{\PreferredPolicy}{`winner'}" _n
 // =================================================================
 
 sysuse auto, clear                     // 1978 automobile data, ships with Stata
-keep if _n<=50
 regress price mpg weight
 
 local coefmpg = strtrim(string(_b[mpg],  "%9.1f"))   // coefficient on mpg
